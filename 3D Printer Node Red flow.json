@@ -1,0 +1,327 @@
+[
+    {
+        "id": "8920426f.c2e3a",
+        "type": "tab",
+        "label": "3D Printer UI",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "889edf5e.523d8",
+        "type": "ui_form",
+        "z": "8920426f.c2e3a",
+        "name": "",
+        "label": "",
+        "group": "cf474592.f4d0c8",
+        "order": 1,
+        "width": "9",
+        "height": "12",
+        "options": [
+            {
+                "label": "Layer height",
+                "value": "layer_height",
+                "type": "number",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Wall thickness",
+                "value": "wall_thickness",
+                "type": "number",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Infill density",
+                "value": "infill_density",
+                "type": "number",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Infill pattern",
+                "value": "infill_pattern",
+                "type": "text",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Nozzle temperature",
+                "value": "nozzle_temperature",
+                "type": "number",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Bed temperature",
+                "value": "bed_temperature",
+                "type": "number",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Print speed",
+                "value": "print_speed",
+                "type": "number",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Material",
+                "value": "material",
+                "type": "text",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Fan speed",
+                "value": "fan_speed",
+                "type": "number",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Tension strength",
+                "value": "tension_strenght",
+                "type": "number",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Elongation",
+                "value": "elongation",
+                "type": "number",
+                "required": true,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "layer_height": "",
+            "wall_thickness": "",
+            "infill_density": "",
+            "infill_pattern": "",
+            "nozzle_temperature": "",
+            "bed_temperature": "",
+            "print_speed": "",
+            "material": "",
+            "fan_speed": "",
+            "tension_strenght": "",
+            "elongation": ""
+        },
+        "payload": "",
+        "submit": "submit",
+        "cancel": "cancel",
+        "topic": "",
+        "x": 90,
+        "y": 160,
+        "wires": [
+            [
+                "cff18a39.f71998"
+            ]
+        ]
+    },
+    {
+        "id": "cff18a39.f71998",
+        "type": "function",
+        "z": "8920426f.c2e3a",
+        "name": "Pre Token",
+        "func": "//global.set(\"country\",countries[msg.payload.country])\nglobal.set(\"layer_height\",msg.payload.layer_height)\nglobal.set(\"wall_thickness\",msg.payload.wall_thickness)\nglobal.set(\"infill_density\",msg.payload.infill_density)\nglobal.set(\"infill_pattern\",msg.payload.infill_pattern)\nglobal.set(\"nozzle_temperature\",msg.payload.nozzle_temperature)\nglobal.set(\"bed_temperature\",msg.payload.bed_temperature)\nglobal.set(\"print_speed\",msg.payload.print_speed)\nglobal.set(\"material\",msg.payload.material)\nglobal.set(\"fan_speed\",msg.payload.fan_speed)\nglobal.set(\"tension_strenght\",msg.payload.tension_strenght)\nglobal.set(\"elongation\",msg.payload.elongation)\n\nvar apikey = \"2nzF5rfp4Kp3_rKf7y6L4us2adhg42JqU5fPRDJ10vys\"\nmsg.headers = {\"content-type\":\"application/x-www-form-urlencoded\"}\nmsg.payload = {\"grant_type\":\"urn:ibm:params:oauth:grant-type:apikey\",\"apikey\":apikey}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 240,
+        "y": 80,
+        "wires": [
+            [
+                "4c49d417.00fc0c"
+            ]
+        ]
+    },
+    {
+        "id": "4c49d417.00fc0c",
+        "type": "http request",
+        "z": "8920426f.c2e3a",
+        "name": "",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://iam.cloud.ibm.com/identity/token",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 350,
+        "y": 220,
+        "wires": [
+            [
+                "93a8fa20.8e2288"
+            ]
+        ]
+    },
+    {
+        "id": "93a8fa20.8e2288",
+        "type": "function",
+        "z": "8920426f.c2e3a",
+        "name": "",
+        "func": "var token = msg.payload.access_token\nvar instance_id = \"e1439668-0042-46c5-a739-4a7a3c978721\"\nmsg.headers={'Content-Type': 'application/json',\"Authorization\":\"Bearer \"+token,\"ML-Instance-ID\":instance_id}\n\nvar layer_height = global.get(\"layer_height\")\nvar wall_thickness= global.get(\"wall_thickness\")\nvar infill_density = global.get(\"infill_density\")\nvar infill_pattern = global.get(\"infill_pattern\")\nvar nozzle_temperature = global.get(\"nozzle_temperature\")\nvar bed_temperature= global.get(\"bed_temperature\")\nvar print_speed = global.get(\"print_speed\")\nvar material= global.get(\"material\")\nvar fan_speed = global.get(\"fan_speed\")\nvar tension_strenght= global.get(\"tension_strenght\")\nvar elongation = global.get(\"elongation\")\n\nmsg.payload = {\n    \"input_data\": [{\n        \"fields\": [\n    \"Layer height\", \"Wall thickness\", \"Infill density\", \n    \"Infill pattern\", \"Nozzle temperature\", \"Bed temperature\",\n    \"Print speed\", \"Material\", \"Fan speed\", \"Tension strenght\",\n    \"Elongation\"],\n    \"values\": [\n        [\n            layer_height, wall_thickness, infill_density, infill_pattern,\n            nozzle_temperature, bed_temperature, print_speed,\n            material, fan_speed, tension_strenght, elongation]]\n    }\n        ]\n            \n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 470,
+        "y": 80,
+        "wires": [
+            [
+                "5368a119.c0595",
+                "29a0a5b2.fe136a"
+            ]
+        ]
+    },
+    {
+        "id": "5368a119.c0595",
+        "type": "http request",
+        "z": "8920426f.c2e3a",
+        "name": "",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://us-south.ml.cloud.ibm.com/v4/deployments/be296f40-89bb-4a79-b2ea-0f4cd315c81d/predictions",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 590,
+        "y": 220,
+        "wires": [
+            [
+                "7b579091.e2ce5",
+                "54dab928.e02a08"
+            ]
+        ]
+    },
+    {
+        "id": "54dab928.e02a08",
+        "type": "function",
+        "z": "8920426f.c2e3a",
+        "name": "Showing result",
+        "func": "msg.payload = \"The predicted Roughness is \" + msg.payload.predictions[0].values[0][0].toPrecision(4);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 740,
+        "y": 140,
+        "wires": [
+            [
+                "b81c0cd7.aa7e",
+                "8be49769.9245a8",
+                "87779102.039e6"
+            ]
+        ]
+    },
+    {
+        "id": "87779102.039e6",
+        "type": "debug",
+        "z": "8920426f.c2e3a",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 950,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "b81c0cd7.aa7e",
+        "type": "ui_text",
+        "z": "8920426f.c2e3a",
+        "group": "cf474592.f4d0c8",
+        "order": 2,
+        "width": "9",
+        "height": "2",
+        "name": "",
+        "label": "",
+        "format": "{{msg.payload}}",
+        "layout": "row-center",
+        "x": 1010,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "8be49769.9245a8",
+        "type": "ui_toast",
+        "z": "8920426f.c2e3a",
+        "position": "dialog",
+        "displayTime": "3",
+        "highlight": "",
+        "sendall": false,
+        "outputs": 1,
+        "ok": "OK",
+        "cancel": "",
+        "raw": false,
+        "topic": "",
+        "name": "",
+        "x": 970,
+        "y": 220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "7b579091.e2ce5",
+        "type": "debug",
+        "z": "8920426f.c2e3a",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 750,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "29a0a5b2.fe136a",
+        "type": "debug",
+        "z": "8920426f.c2e3a",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 740,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "cf474592.f4d0c8",
+        "type": "ui_group",
+        "z": "",
+        "name": "Detail",
+        "tab": "5b8cb95f.4ba7f8",
+        "order": 1,
+        "disp": true,
+        "width": "9",
+        "collapse": false
+    },
+    {
+        "id": "5b8cb95f.4ba7f8",
+        "type": "ui_tab",
+        "z": "",
+        "name": "3D Printer",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]
